@@ -79,6 +79,7 @@ export interface AstContext {
 	imports: { [name: string]: ImportDescription };
 	isCrossChunkImport: (importDescription: ImportDescription) => boolean;
 	includeNamespace: () => void;
+	inFunction: boolean;
 	magicString: MagicString;
 	moduleContext: string;
 	nodeConstructors: { [name: string]: typeof NodeBase };
@@ -87,6 +88,7 @@ export interface AstContext {
 	traceExport: (name: string) => Variable;
 	traceVariable: (name: string) => Variable;
 	treeshake: boolean;
+	usesTopLevelAwait: boolean;
 	varOrConst: string;
 	warn: (warning: RollupWarning, pos: number) => void;
 }
@@ -170,6 +172,7 @@ export default class Module {
 	chunk: Chunk;
 	exportAllModules: (Module | ExternalModule)[];
 	hasImportMeta: boolean = false;
+	usesTopLevelAwait: boolean = false;
 
 	private ast: Program;
 	private astContext: AstContext;
@@ -259,9 +262,10 @@ export default class Module {
 			getReexports: this.getReexports.bind(this),
 			getModuleExecIndex: () => this.execIndex,
 			getModuleName: this.basename.bind(this),
-			includeNamespace: this.includeNamespace.bind(this),
 			hasImportMeta: false,
 			imports: this.imports,
+			includeNamespace: this.includeNamespace.bind(this),
+			inFunction: false,
 			isCrossChunkImport: importDescription => importDescription.module.chunk !== this.chunk,
 			magicString: this.magicString,
 			moduleContext: this.context,
@@ -272,6 +276,7 @@ export default class Module {
 			traceExport: this.traceExport.bind(this),
 			traceVariable: this.traceVariable.bind(this),
 			treeshake: this.graph.treeshake,
+			usesTopLevelAwait: false,
 			varOrConst: this.graph.varOrConst,
 			warn: this.warn.bind(this)
 		};
@@ -628,6 +633,7 @@ export default class Module {
 		const magicString = this.magicString.clone();
 		this.ast.render(magicString, options);
 		this.hasImportMeta = this.astContext.hasImportMeta;
+		this.usesTopLevelAwait = this.astContext.usesTopLevelAwait;
 		return magicString;
 	}
 

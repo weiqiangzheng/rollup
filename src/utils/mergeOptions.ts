@@ -203,6 +203,7 @@ function getInputOptions(
 		experimentalCodeSplitting: getOption('experimentalCodeSplitting'),
 		experimentalDynamicImport: getOption('experimentalDynamicImport'),
 		experimentalPreserveModules: getOption('experimentalPreserveModules'),
+		experimentalTopLevelAwait: getOption('experimentalTopLevelAwait'),
 		external: getExternal(config, command),
 		input: getOption('input'),
 		manualChunks: getOption('manualChunks'),

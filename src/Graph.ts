@@ -195,6 +195,10 @@ export default class Graph {
 			this.acornOptions.plugins.importMeta = true;
 		}
 
+		if (options.experimentalTopLevelAwait) {
+			(<any>this.acornOptions).allowAwaitOutsideFunction = true;
+		}
+
 		acornPluginsToInject.push(...ensureArray(options.acornInjectPlugins));
 		this.acornParse = acornPluginsToInject.reduce((acc, plugin) => plugin(acc), acorn).parse;
 	}

@@ -9,6 +9,8 @@ import { ForEachReturnExpressionCallback, SomeReturnExpressionCallback } from '.
 import { GenericEsTreeNode, NodeBase } from './Node';
 import { ObjectPath } from '../../values';
 import Scope from '../../scopes/Scope';
+import MagicString from 'magic-string';
+import { RenderOptions } from '../../../utils/renderHelpers';
 
 export default class FunctionNode extends NodeBase {
 	id: Identifier | null;
@@ -109,6 +111,12 @@ export default class FunctionNode extends NodeBase {
 			path.length > 0 ||
 			this.scope.someReturnExpressionWhenCalled(callOptions, predicateFunction, options)
 		);
+	}
+
+	render(code: MagicString, options: RenderOptions) {
+		this.context.inFunction = true;
+		super.render(code, options);
+		this.context.inFunction = false;
 	}
 }
 
